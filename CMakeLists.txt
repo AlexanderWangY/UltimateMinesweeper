@@ -21,7 +21,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 find_package(SFML 2.5.1 COMPONENTS system window graphics audio REQUIRED)
 
 # List your source files
-file(GLOB_RECURSE SOURCE_FILES "${SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE SOURCE_FILES "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/network/*.cpp")
 
 # Add the executable target
 add_executable(minesweeper ${SOURCE_FILES} ${SOURCES})
