@@ -1,5 +1,5 @@
-#include "gamemodes/Singleplayer.h"
 #include "screens/Screen.h"
+#include "utils/Configuration.h"
 #include "utils/Gamestate.h"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -8,10 +8,11 @@
 #include <SFML/Window/WindowStyle.hpp>
 #include <fstream>
 #include <iostream>
+#include <string>
 
 int main() {
 
-  Gamestate mainState = Gamestate::Selection;
+  Gamestate mainState = Gamestate::Title;
 
   Config config;
 
@@ -33,26 +34,45 @@ int main() {
     return 1;
   }
 
-  int choice = 0;
+  int screenWidth = config.columns * 32;
+  int screenHeight = config.rows * 32 + 100;
+  std::string username;
 
-  sf::RenderWindow window(
-      sf::VideoMode(config.columns * 32, config.rows * 32 + 100),
-      "Aliensweeper", sf::Style::Close);
-  SelectionScreen selection(config.columns * 32, config.rows * 32 + 100);
+  sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight),
+                          "Aliensweeper", sf::Style::Close);
+  TitleScreen title(screenWidth, screenHeight);
 
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
         window.close();
-      } else if (mainState == Gamestate::Selection) {
-        selection.handleEvent(event);
+      }
+
+      switch (mainState) {
+      case Gamestate::Title:
+        title.handleEvent(event, mainState, username);
+        break;
+      case Gamestate::Game:
+        std::cout << "Username entered: " << username << std::endl;
+        window.close();
+        break;
       }
     }
 
-    if (mainState == Gamestate::Selection) {
-      selection.render(window);
+    switch (mainState) {
+    case Gamestate::Title:
+      title.update();
+      title.render(window);
+      break;
+    case Gamestate::Game:
+      // Something
+      break;
     }
+
+    // Displaying
+
+    window.display();
   }
 
   return 0;
