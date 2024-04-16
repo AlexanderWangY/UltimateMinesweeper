@@ -2,6 +2,7 @@
 #include "utils/Configuration.h"
 #include "utils/Gamestate.h"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/VideoMode.hpp>
@@ -20,6 +21,8 @@ int main() {
 
   std::ifstream file("files/config.cfg");
   std::string line;
+  sf::Image icon;
+  icon.loadFromFile("./files/images/alien.png");
 
   // Open config file and store it in a struct
   if (file.is_open()) {
@@ -41,6 +44,8 @@ int main() {
   sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight),
                           "Aliensweeper", sf::Style::Close);
   TitleScreen title(screenWidth, screenHeight);
+
+  window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
   while (window.isOpen()) {
     sf::Event event;

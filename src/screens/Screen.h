@@ -1,5 +1,8 @@
 #pragma once
 #include "../utils/Gamestate.h"
+#include <SFML/Audio/Music.hpp>
+#include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Clock.hpp>
@@ -29,6 +32,15 @@ private:
 
   int width;
   int height;
+
+  // Audio
+  sf::SoundBuffer buffer;
+  sf::Sound typeSound;
+
+  sf::SoundBuffer buffer1;
+  sf::Sound characterLimitSound;
+
+  sf::Music music;
 
 public:
   TitleScreen(int _width, int _height);

@@ -1,5 +1,7 @@
 #include "../utils/TextHelper.h"
 #include "Screen.h"
+#include <SFML/Audio.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
@@ -34,8 +36,20 @@ TitleScreen::TitleScreen(int _width, int _height) {
   userInputText.setStyle(sf::Text::Bold);
   setText(userInputText, width / 2, height / 2 - 45);
 
+  // Cursor stuff
   cursor = "|";
   cursorClock.restart();
+
+  // Audio stuff
+  buffer.loadFromFile("./files/audio/typing.wav");
+  typeSound.setBuffer(buffer);
+
+  buffer1.loadFromFile("./files/audio/characterlimit.wav");
+  characterLimitSound.setBuffer(buffer1);
+
+  music.openFromFile("./files/audio/menu.ogg");
+  music.setVolume(50);
+  music.play();
 }
 
 void TitleScreen::handleEvent(sf::Event event, Gamestate &state,
@@ -46,6 +60,7 @@ void TitleScreen::handleEvent(sf::Event event, Gamestate &state,
     if (event.text.unicode < 128) {
       if (event.text.unicode == '\r' && userInput.getSize() > 0) {
         username = userInput;
+        music.stop();
         state = Gamestate::Game;
       } else if (event.text.unicode == '\b' && userInput.getSize() != 0) {
         userInput.erase(userInput.getSize() - 1); // Remove last character
@@ -54,6 +69,8 @@ void TitleScreen::handleEvent(sf::Event event, Gamestate &state,
                  std::isalpha(static_cast<char>(event.text.unicode))) {
         // Convert entered character to uppercase and append it to userInput
 
+        typeSound.play();
+
         if (userInput.getSize() == 0) {
           userInput += static_cast<char>(
               std::toupper(static_cast<char>(event.text.unicode)));
@@ -61,6 +78,8 @@ void TitleScreen::handleEvent(sf::Event event, Gamestate &state,
           userInput += static_cast<char>(
               std::tolower(static_cast<char>(event.text.unicode)));
         }
+      } else {
+        characterLimitSound.play();
       }
 
       // Update userInputText with the modified userInput string
