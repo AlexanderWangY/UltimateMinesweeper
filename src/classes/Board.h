@@ -1,5 +1,6 @@
 #pragma once
 #include "../utils/RandomHelper.h"
+#include "../utils/SpriteHelper.h"
 #include "Cell.h"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -15,60 +16,58 @@ private:
   std::unordered_map<int, sf::Texture> textureMap;
   int columns;
   int rows;
-  int bombCount;
+  int alienCount;
 
   // Game logiv
 
   bool disabled;
 
 public:
-  Board() {
-    columns = 0;
-    rows = 0;
-    bombCount = 0;
-  }
-
-  void loadBoard(int _columns, int _rows, int _bombCount) {
-    board.clear();
-    cellBoard.clear();
-
+  Board(int _columns, int _rows, int _alienCount) {
     columns = _columns;
     rows = _rows;
-    bombCount = _bombCount;
-    disabled = false;
-    // Fill with zeroes, prep for generation
-    for (int r = 0; r < rows; ++r) {
+    alienCount = _alienCount;
+
+    for (int y = 0; y < rows; ++y) {
       std::vector<int> entry;
-      for (int c = 0; c < columns; ++c) {
+      for (int x = 0; x < columns; ++x) {
         entry.push_back(0);
       }
+
       board.push_back(entry);
     }
 
     this->Generate();
     this->GenerateValues();
 
-    // Populate map with textures
-    try {
-      textureMap[-2].loadFromFile("./files/images/space1.png");
-      textureMap[-1].loadFromFile("./files/images/alien.png");
-      textureMap[0].loadFromFile("./files/images/space.png");
-      textureMap[1].loadFromFile("./files/images/1.png");
-      textureMap[2].loadFromFile("./files/images/2.png");
-      textureMap[3].loadFromFile("./files/images/3.png");
-      textureMap[4].loadFromFile("./files/images/4.png");
-      textureMap[5].loadFromFile("./files/images/5.png");
-      textureMap[6].loadFromFile("./files/images/6.png");
-      textureMap[7].loadFromFile("./files/images/7.png");
-    } catch (...) {
-      std::cerr << "Something went wrong loading images\n";
-    }
-
+    textureMap = getCellTextures();
     for (int y = 0; y < rows; ++y) {
       std::vector<Cell> entry;
       for (int x = 0; x < columns; ++x) {
-        Cell cell(board[y][x], x, y, textureMap[board[y][x]], textureMap[-2],
-                  textureMap[0], textureMap[-3]);
+
+        int tileChoice = rand() % 100;
+        sf::Texture tileTextureRandom;
+
+        if (tileChoice <= 20) {
+          tileTextureRandom = textureMap[100];
+        } else if (tileChoice <= 40) {
+          tileTextureRandom = textureMap[101];
+        } else if (tileChoice <= 60) {
+          tileTextureRandom = textureMap[102];
+        } else if (tileChoice <= 80) {
+          tileTextureRandom = textureMap[103];
+        } else if (tileChoice <= 87) {
+          tileTextureRandom = textureMap[104];
+        } else if (tileChoice <= 94) {
+          tileTextureRandom = textureMap[105];
+        } else if (tileChoice <= 99) {
+          tileTextureRandom = textureMap[106];
+        } else if (tileChoice == 100) {
+          tileTextureRandom = textureMap[107];
+        }
+
+        Cell cell(board[y][x], x, y, textureMap[board[y][x]], tileTextureRandom,
+                  textureMap[0], textureMap[-2]);
 
         entry.push_back(cell);
       }
@@ -83,57 +82,10 @@ public:
     }
   }
 
-  bool checkForWin() {
-    for (std::vector<Cell> &row : cellBoard) {
-      for (Cell &c : row) {
-        if (c.getType() == -1 && !c.isFlagged()) {
-          return false;
-        } else if (c.getType() != -1 && c.isFlagged()) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
-
-  int handleClick(int x, int y) {
-    if (disabled) {
-      return 500;
-    }
-    bool cellFound = false;
-    for (std::vector<Cell> &row : cellBoard) {
-      for (Cell &c : row) {
-        if (c.withinBounds(x, y)) {
-          int result = c.Click();
-
-          return result;
-        }
-      }
-    }
-
-    return 404;
-  }
-
-  int handleFlag(int x, int y) {
-    if (disabled) {
-      return 500;
-    }
-    bool cellFound = false;
-    for (std::vector<Cell> &row : cellBoard) {
-      for (Cell &c : row) {
-        if (c.withinBounds(x, y)) {
-          int result = c.Flag();
-          return result;
-        }
-      }
-    }
-    return 404;
-  }
-
   void Generate() {
     int generated = 0;
 
-    while (generated != bombCount) {
+    while (generated != alienCount) {
       int y = getRandomNumber(0, columns - 1);
       int x = getRandomNumber(0, rows - 1);
 
@@ -174,14 +126,15 @@ public:
     }
   }
 
-  void toggleDisable() {
-    std::cout << "Toggle disable\n";
-    disabled = !disabled;
+  void disableStatus(bool value) {
+    if (value) {
+      disabled = false;
+    } else {
+      disabled = true;
+    }
   }
 
-  void Disable() { disabled = true; }
-
-  void Display() {
+  void printBoard() {
     for (std::vector<int> x : board) {
       for (int val : x) {
         std::cout << val << " ";
@@ -190,10 +143,10 @@ public:
     }
   }
 
-  void render(sf::RenderWindow &window, bool debug) {
+  void render(sf::RenderWindow &window) {
     for (std::vector<Cell> row : cellBoard) {
       for (Cell cell : row) {
-        cell.render(window, debug);
+        cell.render(window);
       }
     }
   }

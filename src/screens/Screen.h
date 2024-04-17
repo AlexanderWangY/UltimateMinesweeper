@@ -1,4 +1,5 @@
 #pragma once
+#include "../classes/Board.h"
 #include "../utils/Gamestate.h"
 #include "../utils/TimerUtility.h"
 #include <SFML/Audio/Music.hpp>
@@ -53,62 +54,60 @@ public:
   void update();
   void render(sf::RenderWindow &window) override;
 };
+
 class GameScreen : public Screen {
 private:
-  sf::RenderWindow *window;
-  Board myBoard;
-  std::unordered_map<std::string, sf::Texture> buttonTextures;
-  sf::Sprite win;
-  sf::Sprite lose;
-  sf::Sprite happy;
-  sf::Sprite debug;
-  sf::Sprite pause;
-  sf::Sprite play;
-  sf::Sprite leader;
+  Board *board;
+  // std::unordered_map<std::string, sf::Texture> buttonTextures;
+  // sf::Sprite win;
+  // sf::Sprite lose;
+  // sf::Sprite happy;
+  // sf::Sprite debug;
+  // sf::Sprite pause;
+  // sf::Sprite play;
+  // sf::Sprite leader;
 
-  // For timer
-  std::unordered_map<int, sf::Texture> numberTextures;
-  int timeElapsed;
-  sf::Sprite hundreth;
-  sf::Sprite tens;
-  sf::Sprite ones;
+  // // For timer
+  // std::unordered_map<int, sf::Texture> numberTextures;
+  // int timeElapsed;
+  // sf::Sprite hundreth;
+  // sf::Sprite tens;
+  // sf::Sprite ones;
 
-  sf::Sprite minuteTen;
-  sf::Sprite minute;
-  sf::Sprite secondTen;
-  sf::Sprite second;
+  // sf::Sprite minuteTen;
+  // sf::Sprite minute;
+  // sf::Sprite secondTen;
+  // sf::Sprite second;
 
-  // Actual Chrono Timer class
-  Timer timer;
-  int timeTaken;
+  // // Actual Chrono Timer class
+  // Timer timer;
+  // int timeTaken;
 
   // For game logic
-  bool gameOver = false;
-  bool winner = false;
-  bool paused = false;
-  bool debugMode = false;
-  bool enabled = true;
+  // bool gameOver = false;
+  // bool winner = false;
+  // bool paused = false;
+  // bool debugMode = false;
+  // bool enabled = true;
 
-  int flagsLeft;
+  // int flagsLeft;
 
   // For window sizing
   int width;
   int height;
   int columns;
   int rows;
-  int bombCount;
+  int alienCount;
 
   // Other MISC.
-  std::string username;
+  std::string *username;
 
 public:
-  GameScreen(int _width, int _height, int _columns, int _rows, int _bombCount,
-             std::string _username);
-  ~GameScreen(){};
+  GameScreen(int _width, int _height, int _columns, int _rows, int _alienCount,
+             std::string &_username);
+  ~GameScreen();
 
   void handleEvent(sf::Event event);
   void update();
   void render(sf::RenderWindow &_window) override;
-
-  void reset();
 };

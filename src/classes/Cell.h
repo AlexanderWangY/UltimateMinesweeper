@@ -108,24 +108,10 @@ public:
     }
   }
 
-  void render(sf::RenderWindow &window, bool debug) {
+  void render(sf::RenderWindow &window) {
     window.draw(under);
     window.draw(value);
-
-    if (debug) {
-      if (type != -1 && !state.revealed) {
-        window.draw(tile);
-      }
-    } else {
-
-      if (!state.revealed) {
-        window.draw(tile);
-      }
-    }
-
-    if (state.flagged) {
-      window.draw(flag);
-    }
+    window.draw(tile);
   }
 
   bool isFlagged() { return state.flagged; }

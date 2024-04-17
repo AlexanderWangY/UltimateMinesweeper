@@ -1,3 +1,4 @@
+#include "classes/Board.h"
 #include "screens/Screen.h"
 #include "utils/Configuration.h"
 #include "utils/Gamestate.h"
@@ -39,11 +40,13 @@ int main() {
 
   int screenWidth = config.columns * 32;
   int screenHeight = config.rows * 32 + 100;
-  std::string username;
+  std::string username = "";
 
   sf::RenderWindow window(sf::VideoMode(screenWidth, screenHeight),
                           "Aliensweeper", sf::Style::Close);
   TitleScreen title(screenWidth, screenHeight);
+  GameScreen game(screenWidth, screenHeight, config.columns, config.rows,
+                  config.alienCount, username);
 
   window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
 
@@ -59,8 +62,7 @@ int main() {
         title.handleEvent(event, mainState, username);
         break;
       case Gamestate::Game:
-        std::cout << "Username entered: " << username << std::endl;
-        window.close();
+        game.handleEvent(event);
         break;
       }
     }
@@ -71,7 +73,7 @@ int main() {
       title.render(window);
       break;
     case Gamestate::Game:
-      // Something
+      game.render(window);
       break;
     }
 
