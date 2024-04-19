@@ -15,13 +15,14 @@ private:
   int columns;
   int rows;
   int alienCount;
-  bool disabled;
+  bool disabled = false;
 
 public:
   Board(int _columns, int _rows, int _alienCount);
   void Generate();
   void GenerateValues();
   void disableStatus(bool value);
+  int handleClick(int x, int y);
   void printBoard();
   void render(sf::RenderWindow &window);
 };

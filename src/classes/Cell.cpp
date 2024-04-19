@@ -79,7 +79,14 @@ void Cell::setNearbyCells(std::vector<std::vector<Cell>> &board) {
 void Cell::render(sf::RenderWindow &window) {
   window.draw(under);
   window.draw(value);
-  window.draw(tile);
+
+  if (!state.revealed) {
+    window.draw(tile);
+  }
+
+  if (state.flagged) {
+    window.draw(flag);
+  }
 }
 
 bool Cell::isFlagged() { return state.flagged; }

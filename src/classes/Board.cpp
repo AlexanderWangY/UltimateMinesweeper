@@ -1,6 +1,8 @@
 #include "Board.h"
+#include "Cell.h"
 #include <iostream>
 #include <string>
+#include <vector>
 
 Board::Board(int _columns, int _rows, int _alienCount) {
   columns = _columns;
@@ -18,33 +20,19 @@ Board::Board(int _columns, int _rows, int _alienCount) {
   this->Generate();
   this->GenerateValues();
 
-  std::vector<int> tileChoices = {100, 101, 102, 103, 104, 105, 106, 107};
-  std::vector<int> tileProbabilities = {20, 20, 20, 20, 7, 7, 5, 1};
+  textureMap = getCellTextures();
 
   for (int y = 0; y < rows; ++y) {
     std::vector<Cell> entry;
+
     for (int x = 0; x < columns; ++x) {
-      int tileChoice = rand() % 100;
-      int tileIndex = 0;
-      int cumulativeProbability = 0;
-
-      for (int i = 0; i < tileProbabilities.size(); ++i) {
-        cumulativeProbability += tileProbabilities[i];
-        if (tileChoice < cumulativeProbability) {
-          tileIndex = i;
-          break;
-        }
-      }
-
-      sf::Texture tileTextureRandom = textureMap[tileChoices[tileIndex]];
-
-      Cell cell(board[y][x], x, y, textureMap[board[y][x]], textureMap[101],
-                textureMap[0], textureMap[-2]);
-      entry.push_back(cell);
+      Cell newCell(board[y][x], x, y, textureMap[board[y][x]], textureMap[100],
+                   textureMap[0], textureMap[-2]);
+      entry.push_back(newCell);
     }
+
     cellBoard.push_back(entry);
   }
-  textureMap = getCellTextures();
 
   for (int y = 0; y < rows; ++y) {
     for (int x = 0; x < columns; ++x) {
@@ -88,6 +76,24 @@ void Board::GenerateValues() {
       board[y][x] = count;
     }
   }
+}
+
+int Board::handleClick(int x, int y) {
+  if (disabled) {
+    return 500;
+  }
+  bool cellFound = false;
+  for (std::vector<Cell> &row : cellBoard) {
+    for (Cell &c : row) {
+      if (c.withinBounds(x, y)) {
+        int result = c.Click();
+
+        return result;
+      }
+    }
+  }
+
+  return 404;
 }
 
 void Board::disableStatus(bool value) {
