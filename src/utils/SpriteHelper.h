@@ -4,13 +4,13 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <unordered_map>
 
-bool isClicked(sf::Sprite &sprite, int x, int y) {
+inline bool isClicked(sf::Sprite &sprite, int x, int y) {
   sf::FloatRect bounds = sprite.getGlobalBounds();
 
   return bounds.contains(x, y);
 }
 
-std::unordered_map<int, sf::Texture> getCellTextures() {
+inline std::unordered_map<int, sf::Texture> getCellTextures() {
   std::unordered_map<int, sf::Texture> textures;
 
   textures[-2].loadFromFile("./files/images/flag.png");
@@ -25,19 +25,19 @@ std::unordered_map<int, sf::Texture> getCellTextures() {
   textures[7].loadFromFile("./files/images/7.png");
   textures[8].loadFromFile("./files/images/8.png");
 
-  textures[100].loadFromFile("./files/iamges/space1.png");
-  textures[101].loadFromFile("./files/iamges/space2.png");
-  textures[102].loadFromFile("./files/iamges/space3.png");
-  textures[103].loadFromFile("./files/iamges/space5.png");
-  textures[104].loadFromFile("./files/iamges/space4.png");
-  textures[105].loadFromFile("./files/iamges/space7.png");
-  textures[106].loadFromFile("./files/iamges/space6.png");
-  textures[107].loadFromFile("./files/iamges/space8.png");
+  textures[100].loadFromFile("./files/images/space1.png");
+  textures[101].loadFromFile("./files/images/space2.png");
+  textures[102].loadFromFile("./files/images/space3.png");
+  textures[103].loadFromFile("./files/images/space5.png");
+  textures[104].loadFromFile("./files/images/space4.png");
+  textures[105].loadFromFile("./files/images/space7.png");
+  textures[106].loadFromFile("./files/images/space6.png");
+  textures[107].loadFromFile("./files/images/space8.png");
 
   return textures;
 }
 
-std::unordered_map<int, sf::Texture> getBoardTextures() {
+inline std::unordered_map<int, sf::Texture> getBoardTextures() {
   std::unordered_map<int, sf::Texture> textures;
 
   for (int x = 0; x < 12; ++x) {
