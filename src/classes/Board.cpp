@@ -82,6 +82,7 @@ int Board::handleClick(int x, int y) {
   if (disabled) {
     return 500;
   }
+
   bool cellFound = false;
   for (std::vector<Cell> &row : cellBoard) {
     for (Cell &c : row) {
@@ -96,6 +97,23 @@ int Board::handleClick(int x, int y) {
   return 404;
 }
 
+int Board::handleFlag(int x, int y) {
+  if (disabled) {
+    return 500;
+  }
+
+  bool cellFound = false;
+  for (std::vector<Cell> &row : cellBoard) {
+    for (Cell &c : row) {
+      if (c.withinBounds(x, y)) {
+        int result = c.Flag();
+        return result;
+      }
+    }
+  }
+  return 404;
+}
+
 void Board::disableStatus(bool value) {
   if (value) {
     disabled = false;
@@ -103,6 +121,8 @@ void Board::disableStatus(bool value) {
     disabled = true;
   }
 }
+
+bool Board::getStatus() { return disabled; }
 
 void Board::printBoard() {
   for (std::vector<int> x : board) {

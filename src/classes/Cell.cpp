@@ -38,9 +38,8 @@ int Cell::Click() {
 
 int Cell::Flag() {
   if (state.revealed != true) {
-    int result = (state.flagged) ? 2 : 0;
     state.flagged = !state.flagged;
-    return result;
+    return 0;
   } else {
     return 1;
   }

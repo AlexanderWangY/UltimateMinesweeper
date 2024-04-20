@@ -22,7 +22,9 @@ public:
   void Generate();
   void GenerateValues();
   void disableStatus(bool value);
+  bool getStatus();
   int handleClick(int x, int y);
+  int handleFlag(int x, int y);
   void printBoard();
   void render(sf::RenderWindow &window);
 };
