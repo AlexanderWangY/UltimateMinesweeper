@@ -114,6 +114,14 @@ int Board::handleFlag(int x, int y) {
   return 404;
 }
 
+void Board::toggleDebug() {
+  for (std::vector<Cell> row : cellBoard) {
+    for (Cell cell : row) {
+      cell.setDebug(!cell.);
+    }
+  }
+}
+
 void Board::render(sf::RenderWindow &window) {
   for (std::vector<Cell> row : cellBoard) {
     for (Cell cell : row) {

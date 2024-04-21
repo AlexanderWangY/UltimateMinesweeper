@@ -38,4 +38,9 @@ public:
   bool isAlien();
   void toggleFlag();
   bool isFlagged();
+
+  void setDebug(bool value);
+  bool isDebug();
+  void setPause(bool value);
+  bool isPause(bool value);
 };

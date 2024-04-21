@@ -77,6 +77,7 @@ void GameScreen::handleEvent(sf::Event event) {
       // Handle reset
       if (isClicked(happy, x, y)) {
         std::cout << "RESETTING GAME\n";
+        this->reset();
       }
 
       // Handle debug
@@ -99,8 +100,10 @@ void GameScreen::handleEvent(sf::Event event) {
 
       if (result == -1) {
         std::cout << "Clicked on an alien\n";
+        gameOver = true;
+        timer.pause();
+        winner = false;
       }
-
     } else if (event.mouseButton.button == sf::Mouse::Right) {
     }
   }

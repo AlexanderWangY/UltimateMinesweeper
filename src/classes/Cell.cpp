@@ -67,22 +67,26 @@ void Cell::render(sf::RenderWindow &window) {
 }
 
 int Cell::Reveal() { // 0 - nothing, 1 - success, -1 -  ALIEN!
-  // If flagged, do nothing
   if (state.flagged) {
-    return 0;
+    return 1;
   }
 
-  state.revealed = true;
-
   if (type == -1) {
+    state.revealed = true;
     return -1;
-  } else if (type == 0) {
+  }
+
+  if (type == 0 && !state.revealed) {
+    state.revealed = true;
+
     for (Cell *c : nearbyCells) {
       c->Reveal();
     }
+  } else {
+    state.revealed = true;
   }
 
-  return 1;
+  return 0;
 }
 
 bool Cell::isAlien() {
@@ -94,3 +98,5 @@ bool Cell::isAlien() {
 
 void Cell::toggleFlag() { state.flagged = !state.flagged; }
 bool Cell::isFlagged() { return state.flagged; }
+
+void Cell::setDebug(bool value) { state.debug = true; }

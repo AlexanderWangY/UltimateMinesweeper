@@ -26,6 +26,7 @@ public:
   int handleClick(int x, int y);
   int handleFlag(int x, int y);
   void printBoard();
-  void debug(bool value);
+  void toggleDebug();
+  void togglePause();
   void render(sf::RenderWindow &window);
 };
