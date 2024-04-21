@@ -13,6 +13,7 @@ struct State {
   bool revealed;
   bool flagged;
   bool disabled;
+  bool debug;
 };
 
 class Cell {
@@ -30,11 +31,11 @@ public:
   Cell(int _type, int _x, int _y, sf::Texture &_value, sf::Texture &_tile,
        sf::Texture &_under, sf::Texture &_flag);
   bool withinBounds(int x, int y);
-  int Click();
-  int Flag();
-  void Reveal();
   void setNearbyCells(std::vector<std::vector<Cell>> &board);
   void render(sf::RenderWindow &window);
+
+  int Reveal();
+  bool isAlien();
+  void toggleFlag();
   bool isFlagged();
-  int getType();
 };

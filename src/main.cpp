@@ -72,6 +72,7 @@ int main() {
       title.render(window);
       break;
     case Gamestate::Game:
+      game.update();
       game.render(window);
       break;
     }

@@ -79,7 +79,7 @@ void Board::GenerateValues() {
 }
 
 int Board::handleClick(int x, int y) {
-  if (disabled) {
+  if (paused) {
     return 500;
   }
 
@@ -87,7 +87,7 @@ int Board::handleClick(int x, int y) {
   for (std::vector<Cell> &row : cellBoard) {
     for (Cell &c : row) {
       if (c.withinBounds(x, y)) {
-        int result = c.Click();
+        int result = c.Reveal();
 
         return result;
       }
@@ -98,7 +98,7 @@ int Board::handleClick(int x, int y) {
 }
 
 int Board::handleFlag(int x, int y) {
-  if (disabled) {
+  if (paused) {
     return 500;
   }
 
@@ -106,31 +106,12 @@ int Board::handleFlag(int x, int y) {
   for (std::vector<Cell> &row : cellBoard) {
     for (Cell &c : row) {
       if (c.withinBounds(x, y)) {
-        int result = c.Flag();
-        return result;
+        c.toggleFlag();
       }
     }
   }
+
   return 404;
-}
-
-void Board::disableStatus(bool value) {
-  if (value) {
-    disabled = false;
-  } else {
-    disabled = true;
-  }
-}
-
-bool Board::getStatus() { return disabled; }
-
-void Board::printBoard() {
-  for (std::vector<int> x : board) {
-    for (int val : x) {
-      std::cout << val << " ";
-    }
-    std::cout << std::endl;
-  }
 }
 
 void Board::render(sf::RenderWindow &window) {

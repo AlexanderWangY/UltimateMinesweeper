@@ -39,6 +39,31 @@ GameScreen::GameScreen(int _width, int _height, int _columns, int _rows,
   play.setPosition(columns * 32.f - 240, 32 * (rows + 0.5));
   leader.setPosition(columns * 32.f - 176, 32 * (rows + 0.5));
 
+  // Setting number positions
+  minuteTen.setPosition((columns * 32) - 97, 32 * (rows + 0.5) + 16);
+  minute.setPosition((columns * 32) - 76, 32 * (rows + 0.5) + 16);
+  secondTen.setPosition((columns * 32) - 54, 32 * (rows + 0.5) + 16);
+  second.setPosition((columns * 32) - 33, 32 * (rows + 0.5) + 16);
+
+  hundreth.setPosition(33, 32 * (rows + 0.5) + 16);
+  tens.setPosition(54, 32 * (rows + 0.5) + 16);
+  ones.setPosition(75, 32 * (rows + 0.5) + 16);
+
+  // Setting starting values
+
+  minuteTen.setTexture(buttonTextures[0]);
+  minute.setTexture(buttonTextures[0]);
+  secondTen.setTexture(buttonTextures[0]);
+  second.setTexture(buttonTextures[0]);
+
+  int flagHundred = flagsLeft / 100;
+  int flagTen = (flagsLeft % 100) / 10;
+  int flagOne = (flagsLeft % 10);
+
+  hundreth.setTexture(buttonTextures[flagHundred]);
+  tens.setTexture(buttonTextures[flagTen]);
+  ones.setTexture(buttonTextures[flagOne]);
+
   timer.start();
 }
 
@@ -46,57 +71,100 @@ GameScreen::~GameScreen() { delete board; }
 
 void GameScreen::handleEvent(sf::Event event) {
   if (event.type == sf::Event::MouseButtonPressed) {
+    int x = event.mouseButton.x;
+    int y = event.mouseButton.y;
     if (event.mouseButton.button == sf::Mouse::Left) {
-      int x = event.mouseButton.x;
-      int y = event.mouseButton.y;
+      // Handle reset
+      if (isClicked(happy, x, y)) {
+        std::cout << "RESETTING GAME\n";
+      }
+
+      // Handle debug
+      if (isClicked(debug, x, y) && !gameOver) {
+        std::cout << "Debug toggle\n";
+      }
+
+      // Handle Pause
+      if (isClicked(pause, x, y) && !gameOver) {
+        paused = !paused;
+        std::cout << "Pause/Play toggle\n";
+      }
+
+      // Handle Leaderboard
+      if (isClicked(leader, x, y)) {
+        std::cout << "Opening leaderboard\n";
+      }
 
       int result = board->handleClick(x, y);
 
       if (result == -1) {
-        std::cout << "YOU LOST LMAO\n";
-      } else if (result == 1) {
-        std::cout << "You can't reveal a flag.\n";
-      } else if (result == 404) {
-        std::cout << "Did not click within bounds\n";
-      } else if (result == 500) {
-        std::cout << "Board is disabled.\n";
+        std::cout << "Clicked on an alien\n";
       }
 
-      if (isClicked(debug, x, y) && !gameOver) {
-        std::cout << "Toggling debug\n";
-        debugMode = !debugMode;
-      } else if (isClicked(happy, x, y)) {
-        std::cout << "resetting game\n";
-      } else if (isClicked(leader, x, y)) {
-        std::cout << "Opening leaderboard\n";
-        timer.pause();
-        paused = true;
-      } else if (isClicked(pause, x, y) && !gameOver) {
-        if (timer.running()) {
-          timer.pause();
-        } else {
-          timer.start();
-        }
-        debugMode = false;
-        paused = !paused;
-        board->disableStatus(!board->getStatus());
-      }
     } else if (event.mouseButton.button == sf::Mouse::Right) {
-      int x = event.mouseButton.x;
-      int y = event.mouseButton.y;
-
-      int result = board->handleFlag(x, y);
     }
   }
 }
 
 void GameScreen::update() {
   // Do something i guess
+
+  if (flagsLeft >= 0) {
+    int flagHundred = flagsLeft / 100;
+    int flagTen = (flagsLeft % 100) / 10;
+    int flagOne = (flagsLeft % 10);
+
+    hundreth.setTexture(buttonTextures[flagHundred]);
+    tens.setTexture(buttonTextures[flagTen]);
+    ones.setTexture(buttonTextures[flagOne]);
+  } else if (flagsLeft < 0) {
+    hundreth.setTexture(buttonTextures[10]);
+    int ABSflags = abs(flagsLeft);
+    int flagTen = ABSflags / 10;
+    int flagOne = (ABSflags % 10);
+    tens.setTexture(buttonTextures[flagTen]);
+    ones.setTexture(buttonTextures[flagOne]);
+  }
+
+  int elapsedTime = timer.getElapsedTime();
+  timeElapsed = elapsedTime;
+  int tenMinutes = elapsedTime / 600;
+  elapsedTime = elapsedTime % 600;
+  int minutes = elapsedTime / 60;
+  elapsedTime = elapsedTime % 60;
+  int tenSeconds = elapsedTime / 10;
+  int seconds = elapsedTime % 10;
+
+  minuteTen.setTexture(buttonTextures[tenMinutes]);
+  minute.setTexture(buttonTextures[minutes]);
+  secondTen.setTexture(buttonTextures[tenSeconds]);
+  second.setTexture(buttonTextures[seconds]);
+}
+
+void GameScreen::reset() {
+  flagsLeft = alienCount;
+  winner = false;
+  gameOver = false;
+
+  delete board;
+  board = new Board(columns, rows, alienCount);
+
+  timer.reset();
+  timer.start();
 }
 
 void GameScreen::render(sf::RenderWindow &window) {
   window.clear(sf::Color::Black);
   board->render(window);
+
+  window.draw(minuteTen);
+  window.draw(minute);
+  window.draw(secondTen);
+  window.draw(second);
+
+  window.draw(hundreth);
+  window.draw(tens);
+  window.draw(ones);
 
   if (paused) {
     window.draw(play);

@@ -85,8 +85,6 @@ private:
   bool gameOver = false;
   bool winner = false;
   bool paused = false;
-  bool debugMode = false;
-  bool enabled = true;
 
   int flagsLeft;
 
@@ -107,5 +105,10 @@ public:
 
   void handleEvent(sf::Event event);
   void update();
+  void reset();
   void render(sf::RenderWindow &_window) override;
+
+  // For game handling
+  void setPause(bool value);
+  void setDebug(bool value);
 };

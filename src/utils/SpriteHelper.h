@@ -40,7 +40,7 @@ inline std::unordered_map<int, sf::Texture> getCellTextures() {
 inline std::unordered_map<int, sf::Texture> getBoardTextures() {
   std::unordered_map<int, sf::Texture> textures;
 
-  for (int x = 0; x < 12; ++x) {
+  for (int x = 0; x < 11; ++x) {
     sf::IntRect textureRect(21 * x, 0, 21, 32);
     sf::Texture newTexture;
     newTexture.loadFromFile("./files/images/digits.png");

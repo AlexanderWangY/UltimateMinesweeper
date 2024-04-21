@@ -15,7 +15,7 @@ private:
   int columns;
   int rows;
   int alienCount;
-  bool disabled = false;
+  bool paused = false;
 
 public:
   Board(int _columns, int _rows, int _alienCount);
@@ -26,5 +26,6 @@ public:
   int handleClick(int x, int y);
   int handleFlag(int x, int y);
   void printBoard();
+  void debug(bool value);
   void render(sf::RenderWindow &window);
 };

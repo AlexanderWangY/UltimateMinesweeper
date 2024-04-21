@@ -13,6 +13,7 @@ Cell::Cell(int _type, int _x, int _y, sf::Texture &_value, sf::Texture &_tile,
   state.disabled = false;
   state.flagged = false;
   state.revealed = false;
+  state.debug = false;
   type = _type;
   tile.setPosition(32.f * pos.x, 32.f * pos.y);
   under.setPosition(pos.x * 32.f, pos.y * 32.f);
@@ -22,38 +23,6 @@ Cell::Cell(int _type, int _x, int _y, sf::Texture &_value, sf::Texture &_tile,
 
 bool Cell::withinBounds(int x, int y) {
   return tile.getGlobalBounds().contains(x, y);
-}
-
-int Cell::Click() {
-  if (state.flagged) {
-    return 1;
-  }
-  if (type == -1) {
-    state.revealed = true;
-    return -1;
-  }
-  this->Reveal();
-  return 0;
-}
-
-int Cell::Flag() {
-  if (state.revealed != true) {
-    state.flagged = !state.flagged;
-    return 0;
-  } else {
-    return 1;
-  }
-}
-
-void Cell::Reveal() {
-  if (type == 0 && !state.revealed) {
-    state.revealed = true;
-    for (Cell *c : nearbyCells) {
-      c->Reveal();
-    }
-  } else {
-    state.revealed = true;
-  }
 }
 
 void Cell::setNearbyCells(std::vector<std::vector<Cell>> &board) {
@@ -77,17 +46,51 @@ void Cell::setNearbyCells(std::vector<std::vector<Cell>> &board) {
 
 void Cell::render(sf::RenderWindow &window) {
   window.draw(under);
-  window.draw(value);
 
-  if (!state.revealed) {
+  if (state.debug && type == -1) {
+    window.draw(value);
+  } else if (state.debug && type != -1) {
     window.draw(tile);
   }
 
-  if (state.flagged) {
+  if (state.revealed && !state.disabled) {
+    window.draw(value);
+  }
+
+  if (!state.revealed && !state.debug) {
+    window.draw(tile);
+  }
+
+  if (!state.revealed && state.flagged) {
     window.draw(flag);
   }
 }
 
-bool Cell::isFlagged() { return state.flagged; }
+int Cell::Reveal() { // 0 - nothing, 1 - success, -1 -  ALIEN!
+  // If flagged, do nothing
+  if (state.flagged) {
+    return 0;
+  }
 
-int Cell::getType() { return type; }
+  state.revealed = true;
+
+  if (type == -1) {
+    return -1;
+  } else if (type == 0) {
+    for (Cell *c : nearbyCells) {
+      c->Reveal();
+    }
+  }
+
+  return 1;
+}
+
+bool Cell::isAlien() {
+  if (type == -1) {
+    return true;
+  }
+  return false;
+}
+
+void Cell::toggleFlag() { state.flagged = !state.flagged; }
+bool Cell::isFlagged() { return state.flagged; }
