@@ -1,3 +1,4 @@
+#include "../utils/LeaderboardHelper.h"
 #include "Screen.h"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
@@ -81,7 +82,7 @@ void GameScreen::handleEvent(sf::Event event) {
       }
 
       // Handle debug
-      if (isClicked(debug, x, y) && !gameOver) {
+      if (isClicked(debug, x, y) && !gameOver && !paused) {
         std::cout << "Debug toggle\n";
         board->toggleDebug();
       }
@@ -94,6 +95,8 @@ void GameScreen::handleEvent(sf::Event event) {
         else
           timer.start();
         board->togglePause();
+
+        board->setDebug(false);
         std::cout << "Pause/Play toggle\n";
       }
 
@@ -123,16 +126,36 @@ void GameScreen::handleEvent(sf::Event event) {
         }
       }
 
-      int result = board->handleClick(x, y);
+      if (!gameOver) {
+        int result = board->handleClick(x, y);
 
-      if (result == -1) {
-        std::cout << "Clicked on an alien\n";
-        gameOver = true;
-        timer.pause();
-        winner = false;
+        if (result == -1) {
+          gameOver = true;
+          paused = true;
+          winner = false;
+          board->setDebug(true);
+          timer.pause();
+        } else if (board->checkWinner()) {
+          gameOver = true;
+          paused = true;
+          winner = true;
+          flagsLeft = 0;
+          board->setDebug(true);
+          timer.pause();
+          board->flagAll();
+          int elapsedTime = timer.getElapsedTime();
+          setScore(*username, elapsedTime);
+        }
       }
+
     } else if (event.mouseButton.button == sf::Mouse::Right) {
       int result = board->handleFlag(x, y);
+
+      if (result == 1) {
+        flagsLeft++;
+      } else {
+        flagsLeft--;
+      }
     }
   }
 }
@@ -175,6 +198,7 @@ void GameScreen::update() {
 void GameScreen::reset() {
   flagsLeft = alienCount;
   winner = false;
+  paused = false;
   gameOver = false;
 
   delete board;

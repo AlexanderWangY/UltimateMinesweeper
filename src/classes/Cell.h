@@ -37,10 +37,12 @@ public:
   int Reveal();
   bool isAlien();
   void toggleFlag();
-  bool isFlagged();
+  bool isRevealed();
 
   void setDebug(bool value);
   bool isDebug();
   void setPause(bool value);
   bool isPause(bool value);
+  void setFlag(bool value);
+  bool isFlagged();
 };

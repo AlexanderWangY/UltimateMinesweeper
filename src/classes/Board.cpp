@@ -1,5 +1,6 @@
 #include "Board.h"
 #include "Cell.h"
+#include <SFML/Graphics/Texture.hpp>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -26,7 +27,28 @@ Board::Board(int _columns, int _rows, int _alienCount) {
     std::vector<Cell> entry;
 
     for (int x = 0; x < columns; ++x) {
-      Cell newCell(board[y][x], x, y, textureMap[board[y][x]], textureMap[100],
+      int num = getRandomNumber(0, 100);
+      sf::Texture *test = nullptr;
+
+      if (num <= 35) {
+        test = &textureMap[100];
+      } else if (num <= 65) {
+        test = &textureMap[101];
+      } else if (num <= 85) {
+        test = &textureMap[102];
+      } else if (num <= 92) {
+        test = &textureMap[103];
+      } else if (num <= 95) {
+        test = &textureMap[104];
+      } else if (num <= 97) {
+        test = &textureMap[105];
+      } else if (num <= 99) {
+        test = &textureMap[106];
+      } else if (num == 100) {
+        test = &textureMap[107];
+      }
+
+      Cell newCell(board[y][x], x, y, textureMap[board[y][x]], *test,
                    textureMap[0], textureMap[-2]);
       entry.push_back(newCell);
     }
@@ -107,6 +129,12 @@ int Board::handleFlag(int x, int y) {
     for (Cell &c : row) {
       if (c.withinBounds(x, y)) {
         c.toggleFlag();
+
+        if (c.isFlagged()) {
+          return 0;
+        } else {
+          return 1;
+        }
       }
     }
   }
@@ -123,8 +151,26 @@ void Board::toggleDebug() {
   }
 }
 
+void Board::setDebug(bool value) {
+  debug = value;
+  for (std::vector<Cell> &row : cellBoard) {
+    for (Cell &c : row) {
+      c.setDebug(debug);
+    }
+  }
+}
+
 void Board::togglePause() {
   paused = !paused;
+  for (std::vector<Cell> &row : cellBoard) {
+    for (Cell &c : row) {
+      c.setPause(paused);
+    }
+  }
+}
+
+void Board::setPause(bool value) {
+  paused = value;
   for (std::vector<Cell> &row : cellBoard) {
     for (Cell &c : row) {
       c.setPause(paused);
@@ -136,6 +182,33 @@ void Board::render(sf::RenderWindow &window) {
   for (std::vector<Cell> row : cellBoard) {
     for (Cell cell : row) {
       cell.render(window);
+    }
+  }
+}
+
+bool Board::checkWinner() {
+  int numOfRevealed = columns * rows - alienCount;
+  for (auto &row : cellBoard) {
+    for (Cell &c : row) {
+      if (c.isRevealed()) {
+        numOfRevealed--;
+      }
+    }
+  }
+
+  if (numOfRevealed == 0) {
+    return true;
+  }
+
+  return false;
+}
+
+void Board::flagAll() {
+  for (auto &row : cellBoard) {
+    for (Cell &c : row) {
+      if (c.isAlien()) {
+        c.setFlag(true);
+      }
     }
   }
 }

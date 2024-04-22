@@ -66,12 +66,12 @@ void Cell::render(sf::RenderWindow &window) {
   }
 
   // If flagged, draw flag on top
-  if (state.flagged) {
+  if (state.flagged && !state.disabled) {
     window.draw(flag);
   }
 }
 
-int Cell::Reveal() { // 0 - nothing, 1 - success, -1 -  ALIEN!
+int Cell::Reveal() { // 0 - nothing, 1 - success, -1 - ALIEN!
   if (state.flagged) {
     return 1;
   }
@@ -101,7 +101,10 @@ bool Cell::isAlien() {
   return false;
 }
 
+bool Cell::isRevealed() { return state.revealed; }
+
 void Cell::toggleFlag() { state.flagged = !state.flagged; }
+void Cell::setFlag(bool value) { state.flagged = value; }
 bool Cell::isFlagged() { return state.flagged; }
 
 void Cell::setDebug(bool value) { state.debug = value; }

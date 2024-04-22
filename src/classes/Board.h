@@ -28,6 +28,12 @@ public:
   int handleFlag(int x, int y);
   void printBoard();
   void toggleDebug();
+  void setDebug(bool value);
   void togglePause();
+  void setPause(bool value);
+  void flagAll();
   void render(sf::RenderWindow &window);
+
+  // Winning conditions
+  bool checkWinner();
 };
