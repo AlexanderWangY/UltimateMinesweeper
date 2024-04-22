@@ -99,4 +99,5 @@ bool Cell::isAlien() {
 void Cell::toggleFlag() { state.flagged = !state.flagged; }
 bool Cell::isFlagged() { return state.flagged; }
 
-void Cell::setDebug(bool value) { state.debug = true; }
+void Cell::setDebug(bool value) { state.debug = value; }
+bool Cell::isDebug() { return state.debug; }

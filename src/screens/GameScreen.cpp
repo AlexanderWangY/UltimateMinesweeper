@@ -83,6 +83,7 @@ void GameScreen::handleEvent(sf::Event event) {
       // Handle debug
       if (isClicked(debug, x, y) && !gameOver) {
         std::cout << "Debug toggle\n";
+        board->toggleDebug();
       }
 
       // Handle Pause
@@ -94,6 +95,27 @@ void GameScreen::handleEvent(sf::Event event) {
       // Handle Leaderboard
       if (isClicked(leader, x, y)) {
         std::cout << "Opening leaderboard\n";
+
+        int screenHeight = rows * 16 + 50;
+        int screenWidth = columns * 16;
+
+        sf::RenderWindow nWindow(sf::VideoMode(screenWidth, screenHeight),
+                                 "Leaderboard", sf::Style::Close);
+
+        Leaderboard leader(screenWidth, screenHeight);
+
+        while (nWindow.isOpen()) {
+          sf::Event event;
+          while (nWindow.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+              nWindow.close();
+            }
+          }
+
+          nWindow.clear(sf::Color::Black);
+          leader.render(nWindow);
+          nWindow.display();
+        }
       }
 
       int result = board->handleClick(x, y);

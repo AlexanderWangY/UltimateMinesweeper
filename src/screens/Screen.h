@@ -112,3 +112,22 @@ public:
   void setPause(bool value);
   void setDebug(bool value);
 };
+
+class Leaderboard : public Screen {
+private:
+  sf::Font font;
+  sf::Text titleText;
+  sf::Text leaderboardText;
+  sf::RenderWindow *window;
+
+  // For window sizing
+
+  int width;
+  int height;
+
+public:
+  Leaderboard(int _width, int _height);
+  ~Leaderboard(){};
+
+  void render(sf::RenderWindow &_window) override;
+};

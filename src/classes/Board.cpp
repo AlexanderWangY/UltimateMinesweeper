@@ -117,7 +117,7 @@ int Board::handleFlag(int x, int y) {
 void Board::toggleDebug() {
   for (std::vector<Cell> row : cellBoard) {
     for (Cell cell : row) {
-      cell.setDebug(!cell.);
+      cell.setDebug(!cell.isDebug());
     }
   }
 }
