@@ -16,6 +16,7 @@ private:
   int rows;
   int alienCount;
   bool paused = false;
+  bool debug = false;
 
 public:
   Board(int _columns, int _rows, int _alienCount);

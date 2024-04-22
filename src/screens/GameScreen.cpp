@@ -89,6 +89,11 @@ void GameScreen::handleEvent(sf::Event event) {
       // Handle Pause
       if (isClicked(pause, x, y) && !gameOver) {
         paused = !paused;
+        if (paused)
+          timer.pause();
+        else
+          timer.start();
+        board->togglePause();
         std::cout << "Pause/Play toggle\n";
       }
 
@@ -127,6 +132,7 @@ void GameScreen::handleEvent(sf::Event event) {
         winner = false;
       }
     } else if (event.mouseButton.button == sf::Mouse::Right) {
+      int result = board->handleFlag(x, y);
     }
   }
 }

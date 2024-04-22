@@ -115,9 +115,19 @@ int Board::handleFlag(int x, int y) {
 }
 
 void Board::toggleDebug() {
-  for (std::vector<Cell> row : cellBoard) {
-    for (Cell cell : row) {
-      cell.setDebug(!cell.isDebug());
+  debug = !debug;
+  for (std::vector<Cell> &row : cellBoard) {
+    for (Cell &c : row) {
+      c.setDebug(debug);
+    }
+  }
+}
+
+void Board::togglePause() {
+  paused = !paused;
+  for (std::vector<Cell> &row : cellBoard) {
+    for (Cell &c : row) {
+      c.setPause(paused);
     }
   }
 }

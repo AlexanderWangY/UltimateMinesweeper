@@ -45,23 +45,28 @@ void Cell::setNearbyCells(std::vector<std::vector<Cell>> &board) {
 }
 
 void Cell::render(sf::RenderWindow &window) {
+  // Always draw the under texture
   window.draw(under);
 
-  if (state.debug && type == -1) {
+  // If in debug mode, draw value or tile based on type
+  if (state.debug && !state.revealed) {
+    if (type == -1) {
+      window.draw(value);
+    } else {
+      window.draw(tile);
+    }
+  }
+  // If revealed and not disabled, draw value
+  else if (state.revealed && !state.disabled) {
     window.draw(value);
-  } else if (state.debug && type != -1) {
+  }
+  // If not revealed and not in debug mode, draw tile
+  else if (!state.revealed && !state.disabled) {
     window.draw(tile);
   }
 
-  if (state.revealed && !state.disabled) {
-    window.draw(value);
-  }
-
-  if (!state.revealed && !state.debug) {
-    window.draw(tile);
-  }
-
-  if (!state.revealed && state.flagged) {
+  // If flagged, draw flag on top
+  if (state.flagged) {
     window.draw(flag);
   }
 }
@@ -101,3 +106,5 @@ bool Cell::isFlagged() { return state.flagged; }
 
 void Cell::setDebug(bool value) { state.debug = value; }
 bool Cell::isDebug() { return state.debug; }
+
+void Cell::setPause(bool value) { state.disabled = value; }
