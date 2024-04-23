@@ -18,7 +18,7 @@ TitleScreen::TitleScreen(int _width, int _height) {
   titleText.setFont(font);
   titleText.setString("Welcome to ALIENSWEEPER");
   titleText.setCharacterSize(24);
-  titleText.setFillColor(sf::Color::Green);
+  titleText.setFillColor(sf::Color(53, 255, 0, opacity));
   titleText.setStyle(sf::Text::Bold | sf::Text::Underlined);
   setText(titleText, width / 2, height / 2 - 150);
 
@@ -26,13 +26,13 @@ TitleScreen::TitleScreen(int _width, int _height) {
   inputPromptText.setFont(font);
   inputPromptText.setString("Enter your name:");
   inputPromptText.setCharacterSize(20);
-  inputPromptText.setFillColor(sf::Color::White);
+  inputPromptText.setFillColor(sf::Color(255, 255, 255, opacity));
   setText(inputPromptText, width / 2, height / 2 - 75);
 
   userInputText.setFont(font);
   userInputText.setString("|");
   userInputText.setCharacterSize(18);
-  userInputText.setFillColor(sf::Color::Yellow);
+  userInputText.setFillColor(sf::Color(255, 218, 0, opacity));
   userInputText.setStyle(sf::Text::Bold);
   setText(userInputText, width / 2, height / 2 - 45);
 
@@ -50,10 +50,11 @@ TitleScreen::TitleScreen(int _width, int _height) {
   music.openFromFile("./files/audio/menu.ogg");
   music.setVolume(50);
   music.play();
+  intro.openFromFile("./files/audio/intro.ogg");
 }
 
 void TitleScreen::handleEvent(sf::Event event, Gamestate &state,
-                              std::string &username) {
+                              std::string &username, GameScreen &game) {
 
   // Check if event is user entering text!
   if (event.type == sf::Event::TextEntered) {
@@ -61,7 +62,8 @@ void TitleScreen::handleEvent(sf::Event event, Gamestate &state,
       if (event.text.unicode == '\r' && userInput.getSize() > 0) {
         username = userInput;
         music.stop();
-        state = Gamestate::Game;
+        entered = true;
+        intro.play();
       } else if (event.text.unicode == '\b' && userInput.getSize() != 0) {
         userInput.erase(userInput.getSize() - 1); // Remove last character
       } else if (userInput.getSize() < 10 && event.text.unicode != '\b' &&
@@ -88,19 +90,36 @@ void TitleScreen::handleEvent(sf::Event event, Gamestate &state,
   }
 }
 
-void TitleScreen::update() {
-  if (cursorClock.getElapsedTime().asSeconds() >= blink_interval) {
+void TitleScreen::update(Gamestate &state, GameScreen &game) {
+  if (cursorClock.getElapsedTime().asSeconds() >= blink_interval && !entered) {
     cursor = cursor == "|" ? "" : "|";
     userInputText.setString(userInput + cursor);
     cursorClock.restart();
+  } else if (entered) {
+    userInputText.setString(userInput);
+  }
+
+  if (entered) {
+    if (opacity > 0) {
+      opacity -= 2;
+    } else {
+      state = Gamestate::Game;
+      game.startGame();
+    }
   }
 }
 
 void TitleScreen::render(sf::RenderWindow &window) {
   window.clear(sf::Color::Black);
-  window.draw(titleText);
-  window.draw(inputPromptText);
-  setTextX(userInputText, width / 2);
+  titleText.setFillColor(sf::Color(53, 255, 0, opacity));
+  userInputText.setFillColor(sf::Color(255, 218, 0, opacity));
+  inputPromptText.setFillColor(sf::Color(255, 255, 255, opacity));
 
-  window.draw(userInputText);
+  if (opacity > 0) {
+    window.draw(titleText);
+    window.draw(inputPromptText);
+    setTextX(userInputText, width / 2);
+
+    window.draw(userInputText);
+  }
 }

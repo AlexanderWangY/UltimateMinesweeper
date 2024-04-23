@@ -1,6 +1,7 @@
 #include "../utils/LeaderboardHelper.h"
 #include "Screen.h"
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Window.hpp>
@@ -29,6 +30,14 @@ GameScreen::GameScreen(int _width, int _height, int _columns, int _rows,
   pause.setTexture(buttonTextures[15]);
   play.setTexture(buttonTextures[16]);
   leader.setTexture(buttonTextures[18]);
+
+  // new Textures
+
+  mute.setTexture(buttonTextures[19]);
+  unmute.setTexture(buttonTextures[20]);
+
+  mute.setPosition(columns / 2.0 * 32.f - 200, 32 * (rows + 0.5));
+  unmute.setPosition(columns / 2.0 * 32.f - 200, 32 * (rows + 0.5));
 
   board = new Board(columns, rows, alienCount);
 
@@ -65,10 +74,21 @@ GameScreen::GameScreen(int _width, int _height, int _columns, int _rows,
   tens.setTexture(buttonTextures[flagTen]);
   ones.setTexture(buttonTextures[flagOne]);
 
-  timer.start();
+  buffer.loadFromFile("./files/audio/explosion.wav");
+  loseSound.setBuffer(buffer);
+
+  music.openFromFile("./files/audio/game.ogg");
+  music.setVolume(50);
+
+  winMusic.openFromFile("./files/audio/winningSong.ogg");
 }
 
 GameScreen::~GameScreen() { delete board; }
+
+void GameScreen::startGame() {
+  timer.start();
+  music.play();
+}
 
 void GameScreen::handleEvent(sf::Event event) {
   if (event.type == sf::Event::MouseButtonPressed) {
@@ -87,13 +107,28 @@ void GameScreen::handleEvent(sf::Event event) {
         board->toggleDebug();
       }
 
+      // Handle muting
+      if (isClicked(mute, x, y)) {
+        muted = !muted;
+        if (!gameOver) {
+          if (muted) {
+            music.stop();
+          } else {
+            music.play();
+          }
+        }
+      }
+
       // Handle Pause
       if (isClicked(pause, x, y) && !gameOver) {
         paused = !paused;
-        if (paused)
+        if (paused) {
           timer.pause();
-        else
+          music.pause();
+        } else {
           timer.start();
+          music.play();
+        }
         board->togglePause();
 
         board->setDebug(false);
@@ -130,12 +165,16 @@ void GameScreen::handleEvent(sf::Event event) {
         int result = board->handleClick(x, y);
 
         if (result == -1) {
+          loseSound.play();
+          music.stop();
           gameOver = true;
           paused = true;
           winner = false;
           board->setDebug(true);
           timer.pause();
         } else if (board->checkWinner()) {
+          music.stop();
+          winMusic.play();
           gameOver = true;
           paused = true;
           winner = true;
@@ -206,6 +245,13 @@ void GameScreen::reset() {
 
   timer.reset();
   timer.start();
+  winMusic.stop();
+
+  music.stop();
+
+  if (!muted) {
+    music.play();
+  }
 }
 
 void GameScreen::render(sf::RenderWindow &window) {
@@ -220,6 +266,12 @@ void GameScreen::render(sf::RenderWindow &window) {
   window.draw(hundreth);
   window.draw(tens);
   window.draw(ones);
+
+  if (muted) {
+    window.draw(unmute);
+  } else {
+    window.draw(mute);
+  }
 
   if (paused) {
     window.draw(play);

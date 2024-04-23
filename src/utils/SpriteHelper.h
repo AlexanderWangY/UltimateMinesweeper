@@ -55,6 +55,8 @@ inline std::unordered_map<int, sf::Texture> getBoardTextures() {
   textures[16].loadFromFile("./files/images/play.png");
   textures[17].loadFromFile("./files/images/debug.png");
   textures[18].loadFromFile("./files/images/leader.png");
+  textures[19].loadFromFile("./files/images/mute.png");
+  textures[20].loadFromFile("./files/images/unmute.png");
 
   return textures;
 }

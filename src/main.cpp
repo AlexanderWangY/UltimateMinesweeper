@@ -1,6 +1,7 @@
 #include "screens/Screen.h"
 #include "utils/Configuration.h"
 #include "utils/Gamestate.h"
+#include <SFML/Audio/Music.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -47,7 +48,11 @@ int main() {
   GameScreen game(screenWidth, screenHeight, config.columns, config.rows,
                   config.alienCount, username);
 
+  window.setFramerateLimit(60);
+  window.setVerticalSyncEnabled(false);
   window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
+  bool playing = false;
 
   while (window.isOpen()) {
     sf::Event event;
@@ -58,7 +63,7 @@ int main() {
 
       switch (mainState) {
       case Gamestate::Title:
-        title.handleEvent(event, mainState, username);
+        title.handleEvent(event, mainState, username, game);
         break;
       case Gamestate::Game:
         game.handleEvent(event);
@@ -68,7 +73,7 @@ int main() {
 
     switch (mainState) {
     case Gamestate::Title:
-      title.update();
+      title.update(mainState, game);
       title.render(window);
       break;
     case Gamestate::Game:
